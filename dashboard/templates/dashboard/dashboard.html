@@ -3,6 +3,7 @@
 
 <head>
     <title>Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -51,11 +52,26 @@
         }
 
         .stat-box.spent {
-            background:#476F6D ;
+            background: #476F6D;
         }
 
         .stat-box.limit {
             background: #7A9E9F;
+        }
+
+        .alert {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            color: #856404;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .chart-container {
+            width: 300px;
+            margin: 20px auto;
         }
 
         table {
@@ -119,6 +135,18 @@
             </div>
         </div>
 
+        <!-- Alert Banner -->
+        <div class="alert" id="alertBanner">
+            Warning: You have used 80% or more of your budget!
+        </div>
+
+        <!-- Pie Chart -->
+        <h3>Spending by Category</h3>
+        <div class="chart-container">
+            <canvas id="pieChart"></canvas>
+        </div>
+
+        <!-- Recent Transactions -->
         <h3>Recent Transactions</h3>
         <table>
             <tr>
@@ -142,6 +170,37 @@
         <a href="{% url 'add' %}">Add Expense</a>
 
     </div>
+
+    <script>
+        const ctx = document.getElementById('pieChart').getContext('2d');
+        const pieChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: {{ category_names| safe }},
+        datasets: [{
+            data: {{ category_totals| safe }},
+            backgroundColor: [
+            '#476F6D',
+            '#C4A882',
+            '#7A9E9F',
+            '#8B6F5E',
+            '#A8C5C3',
+            '#36454F',
+
+        ],
+           
+            }]
+        },
+        options: {
+            responsive: true,
+                plugins: {
+                legend: {
+                    position: 'bottom',
+                }
+            }
+        }
+    });
+    </script>
 
 </body>
 
