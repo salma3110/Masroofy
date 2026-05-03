@@ -50,7 +50,7 @@ def login(request):
             user.failed_attempts = 0
             user.save()
             logger.info(f'Successful login for user: {user.name}')
-            return redirect('/dashboard/dashboard/')  # Redirect to dashboard 
+            return redirect('/dashboard/')  # Redirect to dashboard 
 
         else:
              user.failed_attempts += 1
