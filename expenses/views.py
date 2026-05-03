@@ -3,9 +3,15 @@ from .models import Log, Category
 
 def add_expense(request):
     if request.method == "POST":
-        amount = float(request.POST['amount'])  # ✅ cast to float
+        amount = float(request.POST['amount'])
+
+        if amount < 0:
+            return render(request, 'expenses/add_expense.html', {
+                'error': 'Amount cannot be negative'
+            })
+
         category_id = request.POST['category']
-        category = get_object_or_404(Category, id=category_id)  # safer lookup
+        category = Category.objects.get(id=category_id)
 
         Log.objects.create(amount=amount, category=category)
         return redirect('history')
