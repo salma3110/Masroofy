@@ -67,7 +67,7 @@ def login(request):
     # Check if any user exists, if not redirect to setup
     if not User.objects.exists():
         logger.warning('Login attempt: No user found - redirecting to setup')
-        return redirect('setup')
+        return redirect('auth_setup')
             
     return render(request, 'authentication/login.html')         
 def lockout(request):

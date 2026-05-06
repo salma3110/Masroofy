@@ -51,7 +51,7 @@ def setup(request):
 def change_budget(request):
     cycle = _get_active_cycle()
     if not cycle:
-        return redirect('setup')
+        return redirect('budget_setup')
 
     if request.method == 'POST':
         allowance_raw = request.POST.get('allowance', '')
