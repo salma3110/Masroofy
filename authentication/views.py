@@ -16,7 +16,7 @@ def setup(request):
         hashed_pin = make_password(pin)
         User.objects.create(name=name, pin=hashed_pin)
 
-        return redirect('login')
+        return redirect('authentication:login')
 
     return render(request, 'authentication/setup.html')
 
@@ -60,14 +60,14 @@ def login(request):
                 user.lock_time = timezone.now()
                 user.save()
                 logger.error(f'User {user.name} locked after 3 failed attempts')
-                return redirect('lockout')
+                return redirect('authentication:lockout')
              user.save()
              return render(request, 'authentication/login.html', {'error': 'Incorrect PIN. Try again.'})
     
     # Check if any user exists, if not redirect to setup
     if not User.objects.exists():
         logger.warning('Login attempt: No user found - redirecting to setup')
-        return redirect('setup')
+        return redirect('authentication:setup')
             
     return render(request, 'authentication/login.html')         
 def lockout(request):
