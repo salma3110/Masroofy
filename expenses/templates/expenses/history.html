@@ -60,6 +60,8 @@
 <div class="container">
     <h2>Expense History</h2>
 
+    <a href="{% url 'export' %}" class="delete-btn" style="background: #476F6D; margin-bottom: 15px;"> Download </a>
+
     {% if logs %}
     <table>
         <tr>

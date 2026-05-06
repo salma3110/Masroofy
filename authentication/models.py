@@ -1,7 +1,7 @@
 from django.db import models
 
 class User(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True)
     pin = models.CharField(max_length=255)
     failed_attempts = models.IntegerField(default=0)
     is_locked = models.BooleanField(default=False)
