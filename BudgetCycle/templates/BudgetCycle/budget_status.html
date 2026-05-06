@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Masroofy - Budget Status</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #F5F4EF;
+            margin: 40px;
+            color: #36454F;
+        }
+
+        h2 {
+            color: #36454F;
+            font-weight: 500;
+        }
+
+        .container {
+            background: #FAFAF7;
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            max-width: 700px;
+            margin: auto;
+        }
+
+        .stats {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-box {
+            flex: 1;
+            background: #5E8B89;
+            color: white;
+            padding: 18px;
+            border-radius: 14px;
+            text-align: center;
+        }
+
+        .stat-box h3 {
+            margin: 0;
+            font-size: 1.8em;
+            font-weight: 600;
+        }
+
+        .stat-box p {
+            margin: 5px 0 0 0;
+        }
+
+        .stat-box.spent {
+            background: #476F6D;
+        }
+
+        .stat-box.limit {
+            background: #7A9E9F;
+        }
+
+        /* Alert banner — same as dashboard */
+        .alert {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            color: #856404;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+
+        /* Progress bar */
+        .progress-wrap {
+            margin-bottom: 20px;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85em;
+            color: #36454F;
+            margin-bottom: 6px;
+        }
+
+        .progress-bg {
+            background: #E3E6E1;
+            border-radius: 100px;
+            height: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 100px;
+            background: #5E8B89;
+            transition: width 0.4s ease;
+        }
+
+        .progress-fill.warn {
+            background: #ffc107;
+        }
+
+        .progress-fill.danger {
+            background: #dc3545;
+        }
+
+        /* Cycle info */
+        .cycle-info {
+            font-size: 0.85em;
+            color: #7A9E9F;
+            margin-bottom: 20px;
+        }
+
+        h3 {
+            color: #36454F;
+            font-weight: 500;
+            margin-top: 20px;
+            margin-bottom: 5px;
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 18px;
+            color: #5E8B89;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        a:hover {
+            color: #476F6D;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Masroofy - Budget Status</h2>
+
+        <!-- Cycle date range -->
+        <p class="cycle-info">
+            Cycle: {{ cycle.start_date }} → {{ cycle.end_date }}
+            &nbsp;|&nbsp; {{ days_remaining }} day{{ days_remaining|pluralize }} remaining
+            {% if is_final_day %}&nbsp;<strong>(Final Day)</strong>{% endif %}
+        </p>
+
+        <!-- Alert banner -->
+        {% if alert_message %}
+            {% if "exhausted" in alert_message %}
+                <div class="alert-danger">🚨 {{ alert_message }}</div>
+            {% else %}
+                <div class="alert">⚠️ {{ alert_message }}</div>
+            {% endif %}
+        {% endif %}
+
+        <!-- Stat boxes — same pattern as dashboard -->
+        <div class="stats">
+            <div class="stat-box spent">
+                <h3>{{ total_spent }}</h3>
+                <p>Total Spent</p>
+            </div>
+            <div class="stat-box limit">
+                <h3>{{ safe_limit }}</h3>
+                <p>Daily Limit</p>
+            </div>
+            <div class="stat-box">
+                <h3>{{ remaining_balance }}</h3>
+                <p>Remaining</p>
+            </div>
+        </div>
+
+        <!-- Spending progress bar -->
+        <div class="progress-wrap">
+            <div class="progress-label">
+                <span>Budget Used</span>
+                <span>{{ threshold.percentage }}%</span>
+            </div>
+            <div class="progress-bg">
+                <div
+                    class="progress-fill {% if threshold.exhausted %}danger{% elif threshold.warn_80 %}warn{% endif %}"
+                    style="width: {{ threshold.percentage }}%;"
+                ></div>
+            </div>
+        </div>
+
+        <a href="{% url 'budget_cycle:change_budget' %}">Change Budget</a> |
+        <a href="{% url 'budget_cycle:setup' %}">Start New Cycle</a>
+    </div>
+
+</body>
+</html>
