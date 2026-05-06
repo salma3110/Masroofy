@@ -136,9 +136,11 @@
         </div>
 
         <!-- Alert Banner -->
-        <div class="alert" id="alertBanner">
-            Warning: You have used 80% or more of your budget!
+        {% if alert_message %}
+        <div class="alert"  style = "display : block;">
+            {{alert_message}} 
         </div>
+        {% endif %}
 
         <!-- Pie Chart -->
         <h3>Spending by Category</h3>
