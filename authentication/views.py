@@ -27,13 +27,13 @@ def login(request):
         pin = request.POST.get("pin")
         
         # Check if user exists
-        try:
-            user = User.objects.get(name=name)
-            logger.info(f'Login attempt for known user: {user.name}')
-        except User.DoesNotExist:
+        user = User.objects.filter(name=name).first()
+        if not user:
             logger.warning(f'Login attempt: User "{name}" not found')
             return render(request, 'authentication/login.html', {'error': 'User not found. Please check your name.'})
         
+        logger.info(f'Login attempt for known user: {user.name}')
+
         # Check if user is locked
         if user.is_locked:
             if user.lock_time and timezone.now() > user.lock_time + timedelta(seconds=30):
@@ -50,25 +50,27 @@ def login(request):
             user.failed_attempts = 0
             user.save()
             logger.info(f'Successful login for user: {user.name}')
-            return redirect('/dashboard/')  # Redirect to dashboard 
+            return redirect('/dashboard/')
 
         else:
-             user.failed_attempts += 1
-             logger.warning(f'Failed login attempt for user {user.name} - Attempts: {user.failed_attempts}')
-             if user.failed_attempts >= 3:
+            user.failed_attempts += 1
+            logger.warning(f'Failed login attempt for user {user.name} - Attempts: {user.failed_attempts}')
+            if user.failed_attempts >= 3:
                 user.is_locked = True
                 user.lock_time = timezone.now()
                 user.save()
                 logger.error(f'User {user.name} locked after 3 failed attempts')
                 return redirect('authentication:lockout')
-             user.save()
-             return render(request, 'authentication/login.html', {'error': 'Incorrect PIN. Try again.'})
+            user.save()
+            return render(request, 'authentication/login.html', {'error': 'Incorrect PIN. Try again.'})
     
     # Check if any user exists, if not redirect to setup
     if not User.objects.exists():
         logger.warning('Login attempt: No user found - redirecting to setup')
         return redirect('authentication:setup')
             
-    return render(request, 'authentication/login.html')         
+    return render(request, 'authentication/login.html')
+
+
 def lockout(request):
     return render(request, 'authentication/lockout.html')
