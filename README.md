@@ -16,9 +16,17 @@ Masroofy is a Django-based expense tracking and management application. It provi
 - **Expense History**: View all recorded expenses with dates and categories
 - **Delete Expenses**: Remove expenses from history
 - **Category Support**: Organize expenses by predefined categories
+- **Export to CSV**: Download expense history as a CSV file for external analysis
 
-### 📊 Dashboard
-- **Visual Overview**: Dashboard view for expense monitoring
+### 📊 Budget Management
+- **Budget Setup**: Create budget cycles with start/end dates and allowance
+- **Safe Daily Limit**: Calculate recommended daily spending based on remaining balance and days
+- **Budget Status**: Monitor current spending against budget limits
+- **Change Budget**: Modify budget settings mid-cycle
+- **Spending Tracking**: Automatic integration with expense logs
+
+### 📈 Dashboard
+- **Visual Overview**: Dashboard view for expense and budget monitoring
 
 ## Project Structure
 
@@ -50,6 +58,16 @@ masroofy/
 │   ├── urls.py           # Dashboard URL routes
 │   ├── templates/        # Dashboard templates
 │   │   └── dashboard.html
+│   └── migrations/       # Database migrations
+│
+├── BudgetCycle/          # Budget management app
+│   ├── models.py         # BudgetCycle model
+│   ├── views.py          # Budget setup, status, and update views
+│   ├── urls.py           # Budget URL routes
+│   ├── templates/        # Budget templates
+│   │   ├── setup.html          # Create new budget cycle
+│   │   ├── budget_status.html  # View budget status and progress
+│   │   └── change_budget.html  # Modify budget settings
 │   └── migrations/       # Database migrations
 │
 ├── masroofy/             # Project configuration
@@ -115,6 +133,20 @@ The application will be available at `http://localhost:8000/`
 3. Click Login
 4. **Note**: After 3 failed attempts, your account will be locked for 30 seconds
 
+### Managing Budget Cycles
+1. **Create Budget**: Go to `/budget_cycle/setup/` to create a new budget cycle
+   - Set your total allowance (e.g., $1000)
+   - Choose start and end dates for your budget period
+2. **Monitor Budget**: Visit `/budget_cycle/status/` to view:
+   - Current spending vs. allowance
+   - **Safe Daily Limit**: Automatically calculated based on:
+     - Remaining allowance
+     - Days remaining in cycle
+     - Already spent amount
+3. **Update Budget**: Use `/budget_cycle/change-budget/` to adjust your allowance mid-cycle
+
+**Example**: If you have $1000 allowance for 30 days and spent $100, your safe daily limit for the remaining 29 days would be approximately $31 per day.
+
 ### Managing Expenses
 1. After successful login, you're redirected to `http://localhost:8000/dashboard/dashboard/`
 2. **Add Expense**: Click "Add" to log a new expense with amount and category
@@ -131,6 +163,10 @@ The application will be available at `http://localhost:8000/`
 | `/expenses/add/` | Add new expense |
 | `/expenses/history/` | View expense history |
 | `/expenses/delete/<id>/` | Delete specific expense |
+| `/expenses/export/` | Export expenses to CSV |
+| `/budget_cycle/setup/` | Create new budget cycle |
+| `/budget_cycle/status/` | View budget status and spending limit |
+| `/budget_cycle/change-budget/` | Modify budget settings |
 | `/dashboard/dashboard/` | Main dashboard view |
 | `/admin/` | Django admin panel |
 
@@ -157,6 +193,16 @@ The application will be available at `http://localhost:8000/`
 - category: ForeignKey (linked to Category)
 ```
 
+### BudgetCycle Model (Budget Management)
+```python
+- allowance: FloatField (total budget amount for cycle)
+- start_date: DateField (cycle start date)
+- end_date: DateField (cycle end date)
+- safe_limit: FloatField (calculated daily spending limit)
+- is_active: BooleanField (whether cycle is currently active)
+- created_at: DateTimeField (cycle creation timestamp)
+```
+
 ## Security Features
 
 - **PIN Hashing**: User PINs are hashed using Django's password hashing algorithm
@@ -167,11 +213,11 @@ The application will be available at `http://localhost:8000/`
 ## Logging
 
 The application includes detailed logging for authentication events:
-- ✅ Successful logins
-- ❌ Failed login attempts
-- 🔒 Account lockout events
-- 🔓 Account unlock events
-- 👤 User lookup failures
+-  Successful logins
+-  Failed login attempts
+-  Account lockout events
+-  Account unlock events
+-  User lookup failures
 
 Logs are written to the console and can be configured in Django settings.
 
@@ -188,14 +234,21 @@ Access Django admin at `/admin/` to:
 python manage.py createsuperuser
 ```
 
-## Future Enhancements
+## Implementation Status
 
+### ✅ Completed Features
+- [x] Budget cycles with date ranges
+- [x] Safe daily spending limits (calculated based on remaining balance and days)
+- [x] Export expense data to CSV
+- [x] Budget status monitoring and spending tracking
+
+### 🔄 Future Enhancements
 - [ ] Multiple user support
 - [ ] Expense filtering and sorting
 - [ ] Monthly/yearly expense reports
-- [ ] Export expense data to CSV/PDF
+- [ ] PDF export for reports
 - [ ] Recurring expense templates
-- [ ] Budget alerts and limits
+- [ ] Budget alerts and notifications
 - [ ] Mobile-responsive design improvements
 - [ ] Two-factor authentication
 
@@ -230,8 +283,8 @@ This project is for educational purposes.
 
 ## Author
 
-Created by JoJo
+Created by JanaEzz
 
 ---
-
-**Last Updated**: May 3, 2026
+8
+**Last Updated**: May 8, 2026
