@@ -1,3 +1,11 @@
+"""
+@file BudgetCycle/models.py
+@brief Budget cycle model and helpers.
+
+This module provides `BudgetCycle` which stores a spending allowance and
+computes safe daily limits and thresholds for alerts.
+"""
+
 from django.db import models
 from django.utils import timezone
 from expenses.models import Log
@@ -5,6 +13,15 @@ from expenses.models import Log
 
 
 class BudgetCycle(models.Model):
+    """
+    @brief Represents a budget cycle with allowance and date range.
+
+    Provides helpers to calculate daily safe limits, thresholds and alerts.
+    @var allowance Total allowance for the cycle
+    @var start_date Cycle start date
+    @var end_date Cycle end date
+    @var safe_limit Calculated safe daily limit
+    """
     allowance = models.FloatField(default=0.0)
     start_date = models.DateField()
     end_date = models.DateField()

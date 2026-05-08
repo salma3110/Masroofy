@@ -1,0 +1,233 @@
+﻿{% extends 'base.html' %}
+
+{% block content %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Masroofy - Change Budget</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #F5F4EF;
+            margin: 40px;
+            color: #36454F;
+        }
+
+        h2 {
+            color: #36454F;
+            font-weight: 500;
+        }
+
+        .container {
+            background: #FAFAF7;
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            max-width: 500px;
+            margin: auto;
+        }
+
+        .subtitle {
+            color: #7A9E9F;
+            margin-bottom: 20px;
+            font-size: 0.95em;
+        }
+
+        /* Current cycle snapshot — same style as dashboard stat boxes */
+        .stats {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-box {
+            flex: 1;
+            background: #5E8B89;
+            color: white;
+            padding: 15px;
+            border-radius: 14px;
+            text-align: center;
+        }
+
+        .stat-box h3 {
+            margin: 0;
+            font-size: 1.4em;
+            font-weight: 600;
+        }
+
+        .stat-box p {
+            margin: 5px 0 0 0;
+            font-size: 0.85em;
+        }
+
+        .stat-box.spent {
+            background: #476F6D;
+        }
+
+        .stat-box.limit {
+            background: #7A9E9F;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            font-size: 0.9em;
+            color: #36454F;
+        }
+
+        input[type="number"],
+        input[type="date"] {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #E3E6E1;
+            border-radius: 8px;
+            font-family: Arial, sans-serif;
+            font-size: 1em;
+            color: #36454F;
+            background: white;
+            box-sizing: border-box;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #5E8B89;
+        }
+
+        .hint {
+            font-size: 0.78em;
+            color: #7A9E9F;
+            margin-top: 4px;
+        }
+
+        .alert {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            color: #856404;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px;
+            background: #5E8B89;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-family: Arial, sans-serif;
+            font-size: 1em;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: #476F6D;
+        }
+
+        .btn-cancel {
+            flex: 1;
+            padding: 12px;
+            background: white;
+            color: #5E8B89;
+            border: 1px solid #E3E6E1;
+            border-radius: 10px;
+            font-family: Arial, sans-serif;
+            font-size: 1em;
+            font-weight: 500;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-cancel:hover {
+            background: #F5F4EF;
+            color: #476F6D;
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 18px;
+            color: #5E8B89;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        a:hover {
+            color: #476F6D;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Change Budget</h2>
+        <p class="subtitle">Update your allowance or extend the cycle end date.</p>
+
+        <!-- Current cycle snapshot -->
+        <div class="stats">
+            <div class="stat-box spent">
+                <h3>{{ cycle.allowance }}</h3>
+                <p>Current Allowance</p>
+            </div>
+            <div class="stat-box limit">
+                <h3>{{ cycle.safe_limit }}</h3>
+                <p>Daily Limit</p>
+            </div>
+            <div class="stat-box">
+                <h3>{{ cycle.get_days_remaining }}</h3>
+                <p>Days Left</p>
+            </div>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="allowance">New Total Allowance (EGP)</label>
+                <input type="number" id="allowance" name="allowance"
+                       min="1" step="0.01" value="{{ cycle.allowance }}" required />
+                <p class="hint">Updating this will recalculate your daily limit.</p>
+            </div>
+
+            <div class="form-group">
+                <label for="end_date">End Date</label>
+                <input type="date" id="end_date" name="end_date"
+                       value="{{ cycle.end_date|date:'Y-m-d' }}"
+                       min="{{ cycle.start_date|date:'Y-m-d' }}" />
+                <p class="hint">Leave unchanged to keep current end date ({{ cycle.end_date }}).</p>
+            </div>
+
+            <div class="btn-row">
+                <a href="{% url 'budget_cycle:status' %}" class="btn-cancel">Cancel</a>
+                <button class="btn" type="submit">Update Budget</button>
+            </div>
+        </form>
+
+        <a href="{% url 'budget_cycle:status' %}">← Back to Dashboard</a>
+    </div>
+
+</body>
+</html>
+{% endblock %}

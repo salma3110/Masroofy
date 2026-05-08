@@ -1,5 +1,10 @@
 #!/usr/bin/env python
-"""Django's command-line utility for administrative tasks."""
+"""
+@file manage.py
+@brief Django's command-line utility for administrative tasks.
+
+This wrapper invokes Django's `execute_from_command_line` helper.
+"""
 import os
 import sys
 

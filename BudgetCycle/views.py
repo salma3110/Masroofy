@@ -1,3 +1,11 @@
+"""
+@file BudgetCycle/views.py
+@brief Views for managing budget cycles: setup, change and status.
+
+These views work with the `BudgetCycle` model to create and update cycles and
+render status pages used by the dashboard.
+"""
+
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.utils import timezone
@@ -7,12 +15,26 @@ from .models import BudgetCycle
 
 
 def _get_active_cycle():
+    """
+    @brief Return the currently active BudgetCycle or None.
+
+    @return BudgetCycle or None
+    """
     return BudgetCycle.objects.filter(is_active=True).first()
 
 
 
 
 def setup(request):
+    """
+    @brief Create a new budget cycle from POSTed form data.
+
+    Validates allowance and dates, deactivates any previous active cycle and
+    creates a new `BudgetCycle` instance.
+
+    @param request Django HTTP request
+    @return Django HTTP response or redirect
+    """
     if request.method == 'POST':
         allowance_raw = request.POST.get('allowance', '')
         start_date = request.POST.get('start_date', '')
@@ -59,6 +81,12 @@ def setup(request):
 
 
 def change_budget(request):
+    """
+    @brief Update the current active cycle (allowance or end date).
+
+    @param request Django HTTP request
+    @return Django HTTP response or redirect
+    """
     cycle = _get_active_cycle()
 
     if not cycle:
@@ -104,6 +132,14 @@ def change_budget(request):
 
 
 def budget_status(request):
+    """
+    @brief Render the budget status page for the active cycle.
+
+    Calculates latest safe limits and threshold info used by templates.
+
+    @param request Django HTTP request
+    @return Django HTTP response
+    """
     cycle = _get_active_cycle()
 
     if not cycle:

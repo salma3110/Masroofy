@@ -1,3 +1,10 @@
+"""
+@file expenses/urls.py
+@brief URL routes for the expenses app.
+
+Provides routes to add, list, delete and export expense logs.
+"""
+
 from django.urls import path
 from . import views
 

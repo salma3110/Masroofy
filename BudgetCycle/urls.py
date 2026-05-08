@@ -1,3 +1,10 @@
+"""
+@file BudgetCycle/urls.py
+@brief URL configuration for the BudgetCycle app.
+
+Defines routes for creating and viewing budget cycles.
+"""
+
 from django.urls import path
 from . import views
 

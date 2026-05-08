@@ -1,0 +1,215 @@
+﻿
+{% extends 'base.html' %}
+
+{% block content %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #F5F4EF;
+            margin: 40px;
+            color: #36454F;
+        }
+
+        h2 {
+            color: #36454F;
+            font-weight: 500;
+        }
+
+        .container {
+            background: #FAFAF7;
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            max-width: 700px;
+            margin: auto;
+        }
+
+        .stats {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-box {
+            flex: 1;
+            background: #5E8B89;
+            color: white;
+            padding: 18px;
+            border-radius: 14px;
+            text-align: center;
+        }
+
+        .stat-box h3 {
+            margin: 0;
+            font-size: 1.8em;
+            font-weight: 600;
+        }
+
+        .stat-box p {
+            margin: 5px 0 0 0;
+        }
+
+        .stat-box.spent {
+            background: #476F6D;
+        }
+
+        .stat-box.limit {
+            background: #7A9E9F;
+        }
+
+        .alert {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            color: #856404;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .chart-container {
+            width: 300px;
+            margin: 20px auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #E3E6E1;
+        }
+
+        th {
+            background: #5E8B89;
+            color: white;
+            font-weight: 500;
+        }
+
+        tr:nth-child(even) {
+            background: #F7F8F4;
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 18px;
+            color: #5E8B89;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        a:hover {
+            color: #476F6D;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h2>Masroofy Dashboard</h2>
+
+        <div class="stats">
+            <div class="stat-box spent">
+                <h3>{{ total_spent }}</h3>
+                <p>Total Spent</p>
+            </div>
+            <div class="stat-box limit">
+                <h3>{{ daily_limit }}</h3>
+                <p>Daily Limit</p>
+            </div>
+            <div class="stat-box">
+                <h3>{{ remaining }}</h3>
+                <p>Remaining</p>
+            </div>
+        </div>
+
+        <!-- Alert Banner -->
+        {% if alert_message %}
+        <div class="alert"  style = "display : block;">
+            {{alert_message}} 
+        </div>
+        {% endif %}
+
+        <!-- Pie Chart -->
+        <h3>Spending by Category</h3>
+        <div class="chart-container">
+            <canvas id="pieChart"></canvas>
+        </div>
+
+        <!-- Recent Transactions -->
+        <h3>Recent Transactions</h3>
+        <table>
+            <tr>
+                <th>Amount</th>
+                <th>Category</th>
+                <th>Date</th>
+            </tr>
+            {% for log in logs %}
+            <tr>
+                <td>{{ log.amount }}</td>
+                <td>{{ log.category }}</td>
+                <td>{{ log.date }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3">No transactions yet</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <a href="{% url 'add' %}">Add Expense</a>
+
+    </div>
+
+    <script>
+        const ctx = document.getElementById('pieChart').getContext('2d');
+        const pieChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: {{ category_names| safe }},
+        datasets: [{
+            data: {{ category_totals| safe }},
+            backgroundColor: [
+            '#476F6D',
+            '#C4A882',
+            '#7A9E9F',
+            '#8B6F5E',
+            '#A8C5C3',
+            '#36454F',
+
+        ],
+           
+            }]
+        },
+        options: {
+            responsive: true,
+                plugins: {
+                legend: {
+                    position: 'bottom',
+                }
+            }
+        }
+    });
+    </script>
+
+</body>
+
+</html>
+
+{% endblock %}

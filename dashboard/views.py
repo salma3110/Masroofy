@@ -1,15 +1,26 @@
+"""
+@file dashboard/views.py
+@brief Dashboard view which aggregates expenses and budget info.
+
+Provides a single `dashboard` view that prepares data for the dashboard
+template (totals, category breakdown and any budget alerts).
+"""
+
 from django.shortcuts import render
 from expenses.models import Log, Category
 from BudgetCycle.models import BudgetCycle
 from django.utils import timezone 
-"""
-called when someone visits dashboard
-brings all expense logs from the database
-Calculates total spent
-Packages everything into context
-Sends it to the HTML template to display
-"""
+
+
 def dashboard(request):
+    """
+    @brief Render the main dashboard page.
+
+    Aggregates logs, budget cycle info and per-category totals for the UI.
+
+    @param request Django HTTP request
+    @return Django HTTP response rendering the dashboard
+    """
     # Get all logs from database
     logs = Log.objects.all()
 

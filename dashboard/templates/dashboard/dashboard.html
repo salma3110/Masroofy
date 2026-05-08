@@ -1,6 +1,14 @@
 
 {% extends 'base.html' %}
 
+<!--
+@file dashboard/templates/dashboard/dashboard.html
+@brief Dashboard template showing totals, charts and recent transactions.
+@param logs Queryset of recent Log entries
+@param category_names List of category labels for the pie chart
+@param category_totals Corresponding numeric values for the pie chart
+-->
+
 {% block content %}
 <!DOCTYPE html>
 <html>

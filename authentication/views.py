@@ -1,4 +1,12 @@
 from django.shortcuts import render, redirect
+"""
+@file authentication/views.py
+@brief Views for authentication: setup, login and lockout handlers.
+
+Contains simple PIN-based authentication flows and a short lockout policy.
+Javadoc-style tags are used on public functions for Doxygen consumption.
+"""
+
 from .models import User
 from django.utils import timezone
 from datetime import timedelta
@@ -8,6 +16,12 @@ import logging
 logger = logging.getLogger(__name__)
 
 def setup(request):
+    """
+    @brief Handle initial setup (create the single allowed user).
+
+    @param request Django HTTP request object
+    @return Django HTTP response or redirect
+    """
     if request.method == "POST":
         name = request.POST.get("name")
         pin = request.POST.get("pin")
@@ -22,6 +36,15 @@ def setup(request):
 
 
 def login(request):
+    """
+    @brief Authenticate the user via name + PIN.
+
+    This view enforces a simple lockout after three failed attempts and
+    redirects to setup if no user exists.
+
+    @param request Django HTTP request object
+    @return Django HTTP response or redirect
+    """
     if request.method == "POST":
         name = request.POST.get("name")
         pin = request.POST.get("pin")
@@ -73,4 +96,10 @@ def login(request):
 
 
 def lockout(request):
+    """
+    @brief Render a lockout page shown when the account is temporarily locked.
+
+    @param request Django HTTP request object
+    @return Django HTTP response
+    """
     return render(request, 'authentication/lockout.html')

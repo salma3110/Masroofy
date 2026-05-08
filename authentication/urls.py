@@ -1,4 +1,11 @@
 from django.urls import include, path
+"""
+@file authentication/urls.py
+@brief URL routes for the authentication app.
+
+Defines named routes for setup, login and lockout views.
+"""
+
 from . import views
 
 app_name = 'authentication'
